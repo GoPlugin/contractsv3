@@ -48,9 +48,16 @@ let config = {
   },
   networks: {
     apothem: {
-      url: 'https://earpc.apothem.network',
+      url: 'https://erpc.apothem.network',
       accounts: [''],
     },
+    hardhat: {
+      allowUnlimitedContractSize: Boolean(
+        process.env.ALLOW_UNLIMITED_CONTRACT_SIZE,
+      ),
+      hardfork: 'merge',
+    },
+  },
   solidity: {
     compilers: [
       {
@@ -126,6 +133,19 @@ let config = {
         version: '0.8.19',
         settings: COMPILER_SETTINGS,
       },
+      'src/v0.8/workflow/dev/WorkflowRegistry.sol': {
+        version: '0.8.24',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1000000, // see native_solc_compile_all_workflow
+          },
+          viaIR: true,
+          metadata: {
+            bytecodeHash: 'none',
+          },
+        },
+      },
     },
   },
   mocha: {
@@ -133,17 +153,6 @@ let config = {
     forbidOnly: Boolean(process.env.CI),
   },
   warnings: !process.env.HIDE_WARNINGS,
-}
-
-if (process.env.NETWORK_NAME && process.env.EXPLORER_API_KEY) {
-  config = {
-    ...config,
-    etherscan: {
-      apiKey: {
-        [process.env.NETWORK_NAME]: process.env.EXPLORER_API_KEY,
-      },
-    },
-  }
 }
 
 export default config
